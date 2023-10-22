@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<style>
+		input { width: 4em }
+		div { text-align: center }
+	</style>
+</head>
+
+<body>
+
+<input type="number" min="0.0" max="1.0" value="0.5" step="0.01"><br>
+<div><canvas width="320" height="320"></canvas></div>
+
+<script>
+	const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+	const PLOT_AMOUNT = 10000
+	const COLOR = '#BB6000'
+	let x_center = 160,
+		y_center = 160,
+		radius = 160;
+
+	function refresh(attraction=1) {
+	clear();
+
+		for (let i = 0; i < PLOT_AMOUNT; i++) {
+			let t = Math.random() * 2 * Math.PI
+			let r = getRandomRadius(radius, attraction)
+			let new_x = x_center + r * Math.cos(t)
+			let new_y = y_center + r * Math.sin(t)
+			plot(new_x, new_y);
+		}
+	}
+
+
+	let input = document.querySelector("input");
+	let canvas = document.querySelector("canvas");
+	let ctx = canvas.getContext("2d");
+	ctx.strokeStyle = COLOR;
+
+	function plot(x, y) {
+		ctx.beginPath();
+		//ctx.moveTo(x, y);
+		//ctx.lineTo(x + 0.5, y + 0.5);
+		ctx.strokeRect(x,y,1,1);
+		//ctx.stroke();
+	}
+
+	function clear() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+	}
+
+	input.addEventListener("input", () => refresh(input.value));
+	refresh(input.value);
+
+	function getRandomRadius(r, attr) {
+		attr = clamp(attr, 0.0, 1.0)
+		
+		if(attr > 0.75) {
+			return r - (Math.random() ** (1 - (attr-0.75)/0.25) * r)
+		}
+		else if(attr > 0.5) {
+			return Math.random() ** (0.5 + (attr - 0.5)*2) * r
+		} else {
+			return Math.random() ** attr * r
+		}
+	}
+
+</script>
+
+</body>
+</html>
